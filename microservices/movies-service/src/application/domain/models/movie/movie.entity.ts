@@ -1,23 +1,48 @@
-import { MovieValidator } from '@domain/helpers/validation/movie/movie.validator';
-import { NotificationError } from '@shared/domain/notification.error';
-import { Category, Classification } from '@shared/domain/enums';
-import { Entity } from '@shared/domain/base.entity';
+import { MovieValidator } from '@application/domain/helpers/validation/movie.validator';
+import { NotificationError } from '@application/shared/domain/notification.error';
+import { Category, Classification } from '@application/shared/domain/enums';
+import { Entity } from '@application/shared/domain/base.entity';
+import { MoviePropsOptional } from './movie.factory';
 
 export class Movie extends Entity {
-  private _title: string;
-  private _year: number;
-  private _duration: number | null;
-  private _cover: string;
-  private _synopsis: string | null;
-  private _release: Date | null;
-  private _director: string;
-  private _categories: Category[];
-  private _actors: string[];
-  private _classification: Classification;
-  private _trailers: string[] | null;
-  private _keywords: string[] | null;
+  private _title: string | undefined;
+  private _year: number | undefined;
+  private _duration: number | null | undefined;
+  private _cover: string | undefined;
+  private _synopsis: string | null | undefined;
+  private _release: Date | null | undefined;
+  private _directors: string[] | undefined;
+  private _categories: Category[] | undefined;
+  private _actors: string[] | undefined;
+  private _classification: Classification | undefined;
+  private _trailers: string[] | null | undefined;
+  private _keywords: string[] | null | undefined;
+  private _distributors: string[] | null | undefined;
 
-  constructor(
+  private constructor(props: MoviePropsOptional) {
+    super(props.id);
+    this._title = props.title;
+    this._year = props.year;
+    this._duration = props.duration;
+    this._cover = props.cover;
+    this._synopsis = props.synopsis;
+    this._release = props.release;
+    this._directors = props.directors;
+    this._categories = props.categories;
+    this._actors = props.actors;
+    this._classification = props.classification;
+    this._trailers = props.trailers;
+    this._keywords = props.keywords;
+    this._distributors = props.distributors;
+
+    this.clean();
+    this.validate();
+    if (this.errorBus.hasErrors()) {
+      throw new NotificationError(this.errorBus.getErrors());
+    }
+  }
+
+  public static create(
     id: string,
     title: string,
     year: number,
@@ -25,202 +50,233 @@ export class Movie extends Entity {
     cover: string,
     synopsis: string | null,
     release: Date | null,
-    director: string,
+    directors: string[],
     categories: Category[],
     actors: string[],
     classification: Classification,
     trailers: string[] | null,
     keywords: string[] | null,
-  ) {
-    super(id);
-    this._title = title;
-    this._year = year;
-    this._duration = duration;
-    this._cover = cover;
-    this._synopsis = synopsis;
-    this._release = release;
-    this._director = director;
-    this._categories = categories;
-    this._actors = actors;
-    this._classification = classification;
-    this._trailers = trailers;
-    this._keywords = keywords;
+    distributors: string[] | null,
+  ): Movie {
+    return new Movie({
+      id,
+      title,
+      year,
+      duration,
+      cover,
+      synopsis,
+      release,
+      directors,
+      categories,
+      actors,
+      classification,
+      trailers,
+      keywords,
+      distributors,
+    });
+  }
 
-    this.validate();
-    if (this.errorBus.hasErrors()) {
-      throw new NotificationError(this.errorBus.getErrors());
-    }
+  public static createFrom(
+    id?: string,
+    title?: string,
+    year?: number,
+    duration?: number | null,
+    cover?: string,
+    synopsis?: string | null,
+    release?: Date | null,
+    directors?: string[],
+    categories?: Category[],
+    actors?: string[],
+    classification?: Classification,
+    trailers?: string[] | null,
+    keywords?: string[] | null,
+    distributors?: string[] | null,
+  ): Movie {
+    return new Movie({
+      id: id,
+      title: title,
+      year: year,
+      duration: duration,
+      cover: cover,
+      synopsis: synopsis,
+      release: release,
+      directors: directors,
+      categories: categories,
+      actors: actors,
+      classification: classification,
+      trailers: trailers,
+      keywords: keywords,
+      distributors: distributors,
+    });
   }
 
   protected validate(): void {
     MovieValidator.create().validate(this);
   }
 
-  changeTitle(title: string): void {
-    const oldTitle = this._title;
+  private clean(): void {
+    this._title = this._title?.trim();
+    this._cover = this._cover?.trim();
+    this._synopsis = this._synopsis?.trim();
+    this._directors = this._directors?.map((director) => director.trim());
+    this._actors = this._actors?.map((actor) => actor.trim());
+    this._trailers = this._trailers?.map((trailer) => trailer.trim());
+    this._keywords = this._keywords?.map((keyword) => keyword.trim());
+  }
+
+  public changeTitle(title: string): void {
     this._title = title;
     this.validate();
     if (this.errorBus.hasErrorsFor('title')) {
-      this._title = oldTitle;
       throw new NotificationError(this.errorBus.getErrorsFor('title'));
     }
   }
 
   public changeYear(year: number): void {
-    const oldYear = this._year;
     this._year = year;
     this.validate();
     if (this.errorBus.hasErrorsFor('year')) {
-      this._year = oldYear;
       throw new NotificationError(this.errorBus.getErrorsFor('year'));
     }
   }
 
-  public changeDuration(duration: number): void {
-    const oldDuration = this._duration;
+  public changeDuration(duration: number | null): void {
     this._duration = duration;
     this.validate();
     if (this.errorBus.hasErrorsFor('duration')) {
-      this._duration = oldDuration;
       throw new NotificationError(this.errorBus.getErrorsFor('duration'));
     }
   }
 
   public changeCover(cover: string): void {
-    const oldCover = this._cover;
     this._cover = cover;
     this.validate();
     if (this.errorBus.hasErrorsFor('cover')) {
-      this._cover = oldCover;
       throw new NotificationError(this.errorBus.getErrorsFor('cover'));
     }
   }
 
-  public changeSynopsis(synopsis: string): void {
-    const oldSynopsis = this._synopsis;
+  public changeSynopsis(synopsis: string | null): void {
     this._synopsis = synopsis;
     this.validate();
     if (this.errorBus.hasErrorsFor('synopsis')) {
-      this._synopsis = oldSynopsis;
       throw new NotificationError(this.errorBus.getErrorsFor('synopsis'));
     }
   }
 
-  public changeRelease(release: Date): void {
-    const oldRelease = this._release;
+  public changeRelease(release: Date | null): void {
     this._release = release;
     this.validate();
     if (this.errorBus.hasErrorsFor('release')) {
-      this._release = oldRelease;
       throw new NotificationError(this.errorBus.getErrorsFor('release'));
     }
   }
 
-  public changeDirector(director: string): void {
-    const oldDirector = this._director;
-    this._director = director;
+  public changeDirectors(directors: string[]): void {
+    this._directors = directors;
     this.validate();
-    if (this.errorBus.hasErrorsFor('director')) {
-      this._director = oldDirector;
-      throw new NotificationError(this.errorBus.getErrorsFor('director'));
+    if (this.errorBus.hasErrorsFor('directors')) {
+      throw new NotificationError(this.errorBus.getErrorsFor('directors'));
     }
   }
 
   public changeCategories(categories: Category[]): void {
-    const oldCategories = this._categories;
     this._categories = categories;
     this.validate();
     if (this.errorBus.hasErrorsFor('categories')) {
-      this._categories = oldCategories;
       throw new NotificationError(this.errorBus.getErrorsFor('categories'));
     }
   }
 
   public changeActors(actors: string[]): void {
-    const oldActors = this._actors;
     this._actors = actors;
     this.validate();
     if (this.errorBus.hasErrorsFor('actors')) {
-      this._actors = oldActors;
       throw new NotificationError(this.errorBus.getErrorsFor('actors'));
     }
   }
 
   public changeClassification(classification: Classification): void {
-    const oldClassification = this._classification;
     this._classification = classification;
     this.validate();
     if (this.errorBus.hasErrorsFor('classification')) {
-      this._classification = oldClassification;
       throw new NotificationError(this.errorBus.getErrorsFor('classification'));
     }
   }
 
-  public changeTrailer(trailer: string[]): void {
-    const oldTrailer = this._trailers;
-    this._trailers = trailer;
+  public changeTrailers(trailers: string[] | null): void {
+    this._trailers = trailers;
     this.validate();
-    if (this.errorBus.hasErrorsFor('trailer')) {
-      this._trailers = oldTrailer;
-      throw new NotificationError(this.errorBus.getErrorsFor('trailer'));
+    if (this.errorBus.hasErrorsFor('trailers')) {
+      throw new NotificationError(this.errorBus.getErrorsFor('trailers'));
     }
   }
 
-  public changeKeywords(keywords: string[]): void {
-    const oldKeywords = this._keywords;
+  public changeKeywords(keywords: string[] | null): void {
     this._keywords = keywords;
     this.validate();
     if (this.errorBus.hasErrorsFor('keywords')) {
-      this._keywords = oldKeywords;
       throw new NotificationError(this.errorBus.getErrorsFor('keywords'));
     }
   }
 
-  public get title(): string {
+  public changeDistributors(distributors: string[] | null): void {
+    this._distributors = distributors;
+    this.validate();
+    if (this.errorBus.hasErrorsFor('distributors')) {
+      throw new NotificationError(this.errorBus.getErrorsFor('distributors'));
+    }
+  }
+
+  public get title(): string | undefined {
     return this._title;
   }
 
-  public get year(): number {
+  public get year(): number | undefined {
     return this._year;
   }
 
-  public get duration(): number | null {
+  public get duration(): number | null | undefined {
     return this._duration;
   }
 
-  public get cover(): string {
+  public get cover(): string | undefined {
     return this._cover;
   }
 
-  public get synopsis(): string | null {
+  public get synopsis(): string | null | undefined {
     return this._synopsis;
   }
 
-  public get release(): Date | null {
+  public get release(): Date | null | undefined {
     return this._release;
   }
 
-  public get director(): string {
-    return this._director;
+  public get directors(): string[] | undefined {
+    return this._directors;
   }
 
-  public get categories(): string[] {
+  public get categories(): Category[] | undefined {
     return this._categories;
   }
 
-  public get actors(): string[] {
+  public get actors(): string[] | undefined {
     return this._actors;
   }
 
-  public get classification(): string {
+  public get classification(): Classification | undefined {
     return this._classification;
   }
 
-  public get trailers(): string[] | null {
+  public get trailers(): string[] | null | undefined {
     return this._trailers;
   }
 
-  public get keywords(): string[] | null {
+  public get keywords(): string[] | null | undefined {
     return this._keywords;
+  }
+
+  public get distributors(): string[] | null | undefined {
+    return this._distributors;
   }
 }

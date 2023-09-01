@@ -100,11 +100,10 @@
     "skipLibCheck": true,                                /* Skip type checking all .d.ts files. */
     "baseUrl": ".",
     "paths": {
-      "@domain/*": ["src/domain/*"],
-      "@use-cases/*": ["src/use-cases/*"],
+      "@application/*": ["src/application/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
-      "@adapters/*": ["src/adapters/*"],
-      "@shared/*": ["src/shared/*"]
+      "@injection/*": ["src/injection/*"],
+      "@controllers/*": ["src/injection/*"],
     }
   }
 }

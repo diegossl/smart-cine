@@ -1,5 +1,8 @@
-import { IValidator } from '@shared/domain/base.validator';
-import { Movie } from '@domain/models/movie/movie.entity';
+import { IValidator } from '@application/shared/domain/base.validator';
+import { Movie } from '@application/domain/models/movie/movie.entity';
+import { Classification } from '@application/shared/domain/enums';
+import { Category } from '@application/shared/domain/enums';
+import { ObjectId } from 'mongodb';
 import * as yup from 'yup';
 
 export class MovieValidatorYup implements IValidator<Movie> {
@@ -7,19 +10,20 @@ export class MovieValidatorYup implements IValidator<Movie> {
     try {
       yup
         .object({
-          id: yup.string().uuid().required('id-required'),
+          id: yup.mixed((value): value is ObjectId => ObjectId.isValid(value)).required('id-required'),
           title: yup.string().required('title-required'),
           year: yup.number().required('year-required'),
-          duration: yup.number().optional(),
+          duration: yup.number().integer().nullable(),
           cover: yup.string().required('cover-required'),
-          synopsis: yup.string().optional(),
-          release: yup.date().optional(),
-          director: yup.string().required('director-required'),
-          categories: yup.array().of(yup.string()).required('categories-required'),
+          synopsis: yup.string().nullable(),
+          release: yup.date().nullable(),
+          directors: yup.array().of(yup.string()).required('directors-required'),
+          categories: yup.array(yup.mixed<Category>().oneOf(Object.values(Category)).required('categories-required')).ensure(),
           actors: yup.array().of(yup.string()).required('actors-required'),
-          classification: yup.string().required('classification-required'),
-          trailers: yup.array().optional(),
-          keywords: yup.array().optional(),
+          classification: yup.mixed<Classification>().oneOf(Object.values(Classification)).required('classification-required'),
+          trailers: yup.array().of(yup.string().url()).nullable(),
+          keywords: yup.array().of(yup.string()).nullable(),
+          distributors: yup.array().of(yup.string()).nullable(),
         })
         .validateSync(
           {
@@ -30,12 +34,13 @@ export class MovieValidatorYup implements IValidator<Movie> {
             cover: entity.cover,
             synopsis: entity.synopsis,
             release: entity.release,
-            director: entity.director,
+            directors: entity.directors,
             categories: entity.categories,
             actors: entity.actors,
             classification: entity.classification,
             trailers: entity.trailers,
             keywords: entity.keywords,
+            distributors: entity.distributors,
           },
           { abortEarly: false, strict: true },
         );
