@@ -1,5 +1,5 @@
 export interface IBaseRepository<T> {
-  getAll(): Promise<T[]>;
+  getAll(limit: number, offset: number): Promise<T[]>;
   getById(id: string): Promise<T>;
   create(item: T): Promise<T>;
   update(id: string, item: T): Promise<T>;

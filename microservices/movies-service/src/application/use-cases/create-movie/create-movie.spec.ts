@@ -28,10 +28,14 @@ describe('Create Movie Use Case', () => {
   it('should create a movie', async () => {
     const params = buildParams();
     const movie = buildMovie(params);
+
     const movieRepository = TestRepositoryUtils.movieRepository;
     movieRepository.create = jest.fn().mockResolvedValue(movie);
+
     const useCase = buildUseCase(movieRepository);
     const result = await useCase.execute(params);
+
+    expect(movieRepository.create).toHaveBeenCalledTimes(1);
 
     expect(result.id).toEqual(movie.id);
     expect(result.actors).toEqual(params.actors);

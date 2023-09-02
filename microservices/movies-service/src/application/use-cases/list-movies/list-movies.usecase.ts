@@ -4,19 +4,21 @@ import { DatabaseAccessException } from '@application/shared/exceptions/data/dat
 import { IMovieRepository } from '@application/data/repository/movie.repository.interface';
 import { NotificationError } from '@application/shared/domain/notification.error';
 import { IUseCase } from '@application/shared/use-cases/base.usecase';
-import { GetMovieInput, GetMovieOutput } from './get-movie.dto';
+import { ListMoviesInput, ListMoviesOutput } from './list-movies.dto';
 
-export class GetMovieUseCase implements IUseCase<GetMovieInput, GetMovieOutput> {
+export class ListMoviesUseCase implements IUseCase<ListMoviesInput, ListMoviesOutput> {
   constructor(private readonly _movieRepository: IMovieRepository) {}
 
-  async execute(params: GetMovieInput): Promise<GetMovieOutput> {
+  async execute(params: ListMoviesInput): Promise<ListMoviesOutput> {
     try {
-      return await this._movieRepository.getById(params.id);
+      const limit = params.limit || 10;
+      const offset = params.offset || 0;
+      return await this._movieRepository.getAll(limit, offset);
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/get-movie', error.stack, { params });
+        throw new BusinessLogicException('use-case/list-movies', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
-        throw new UnknownErrorException('use-case/get-movie', error.stack);
+        throw new UnknownErrorException('use-case/list-movies', error.stack);
       }
       throw error;
     }

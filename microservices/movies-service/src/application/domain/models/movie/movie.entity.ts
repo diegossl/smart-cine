@@ -1,8 +1,8 @@
 import { MovieValidator } from '@application/domain/helpers/validation/movie.validator';
 import { NotificationError } from '@application/shared/domain/notification.error';
 import { Category, Classification } from '@application/shared/domain/enums';
+import { MoviePropsOptional, MoviePropsRequired } from './movie.factory';
 import { Entity } from '@application/shared/domain/base.entity';
-import { MoviePropsOptional } from './movie.factory';
 
 export class Movie extends Entity {
   private _title: string | undefined;
@@ -42,71 +42,41 @@ export class Movie extends Entity {
     }
   }
 
-  public static create(
-    id: string,
-    title: string,
-    year: number,
-    duration: number | null,
-    cover: string,
-    synopsis: string | null,
-    release: Date | null,
-    directors: string[],
-    categories: Category[],
-    actors: string[],
-    classification: Classification,
-    trailers: string[] | null,
-    keywords: string[] | null,
-    distributors: string[] | null,
-  ): Movie {
+  public static create(props: MoviePropsRequired): Movie {
     return new Movie({
-      id,
-      title,
-      year,
-      duration,
-      cover,
-      synopsis,
-      release,
-      directors,
-      categories,
-      actors,
-      classification,
-      trailers,
-      keywords,
-      distributors,
+      id: props.id,
+      title: props.title,
+      year: props.year,
+      duration: props.duration,
+      cover: props.cover,
+      synopsis: props.synopsis,
+      release: props.release,
+      directors: props.directors,
+      categories: props.categories,
+      actors: props.actors,
+      classification: props.classification,
+      trailers: props.trailers,
+      keywords: props.keywords,
+      distributors: props.distributors,
     });
   }
 
-  public static createFrom(
-    id?: string,
-    title?: string,
-    year?: number,
-    duration?: number | null,
-    cover?: string,
-    synopsis?: string | null,
-    release?: Date | null,
-    directors?: string[],
-    categories?: Category[],
-    actors?: string[],
-    classification?: Classification,
-    trailers?: string[] | null,
-    keywords?: string[] | null,
-    distributors?: string[] | null,
-  ): Movie {
+  public static createFrom(props: MoviePropsOptional): Movie {
     return new Movie({
-      id: id,
-      title: title,
-      year: year,
-      duration: duration,
-      cover: cover,
-      synopsis: synopsis,
-      release: release,
-      directors: directors,
-      categories: categories,
-      actors: actors,
-      classification: classification,
-      trailers: trailers,
-      keywords: keywords,
-      distributors: distributors,
+      id: props.id,
+      title: props.title,
+      year: props.year,
+      duration: props.duration,
+      cover: props.cover,
+      synopsis: props.synopsis,
+      release: props.release,
+      directors: props.directors,
+      categories: props.categories,
+      actors: props.actors,
+      classification: props.classification,
+      trailers: props.trailers,
+      keywords: props.keywords,
+      distributors: props.distributors,
     });
   }
 

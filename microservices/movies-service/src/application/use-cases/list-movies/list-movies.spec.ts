@@ -5,10 +5,11 @@ import { MovieFactory, MoviePropsRequired } from '@application/domain/models/mov
 import { NotificationError } from '@application/shared/domain/notification.error';
 import { Category, Classification } from '@application/shared/domain/enums';
 import { TestRepositoryUtils } from '@application/shared/tests/repository';
-import { GetMovieUseCase } from './get-movie.usecase';
+import { Movie } from '@application/domain/models/movie/movie.entity';
+import { ListMoviesUseCase } from './list-movies.usecase';
 import { faker } from '@faker-js/faker';
 
-describe('Get Movie Use Case', () => {
+describe('List Movies Use Case', () => {
   const buildParams = (): MoviePropsRequired => ({
     title: faker.lorem.words(3),
     synopsis: faker.lorem.words(10),
@@ -25,44 +26,53 @@ describe('Get Movie Use Case', () => {
     distributors: [faker.company.name(), faker.company.name()],
   });
   const buildMovie = (params: MoviePropsRequired) => MovieFactory.create(params);
-  const buildUseCase = (movieRepository = TestRepositoryUtils.movieRepository) => new GetMovieUseCase(movieRepository);
+  const buildUseCase = (movieRepository = TestRepositoryUtils.movieRepository) => new ListMoviesUseCase(movieRepository);
 
-  it('should get a movie by id', async () => {
-    const params = buildParams();
-    const movie = buildMovie(params);
+  it('should list movies', async () => {
+    const movies: Movie[] = [];
+
+    for (let index = 0; index < 10; index++) {
+      const params = buildParams();
+      const movie = buildMovie(params);
+      movies.push(movie);
+    }
 
     const movieRepository = TestRepositoryUtils.movieRepository;
-    movieRepository.getById = jest.fn().mockResolvedValue(movie);
+    movieRepository.getAll = jest.fn().mockResolvedValue(movies);
 
     const useCase = buildUseCase(movieRepository);
-    const result = await useCase.execute({ id: faker.database.mongodbObjectId() });
+    const result = await useCase.execute({ limit: 10, offset: 0 });
 
-    expect(movieRepository.getById).toHaveBeenCalledTimes(1);
+    expect(movieRepository.getAll).toHaveBeenCalledTimes(1);
 
-    expect(result.id).toEqual(movie.id);
-    expect(result.actors).toEqual(params.actors);
-    expect(result.categories).toEqual(params.categories);
-    expect(result.classification).toEqual(params.classification);
-    expect(result.cover).toEqual(params.cover);
-    expect(result.directors).toEqual(params.directors);
-    expect(result.duration).toEqual(params.duration);
-    expect(result.keywords).toEqual(movie.keywords);
-    expect(result.release).toEqual(movie.release);
-    expect(result.synopsis).toEqual(params.synopsis);
-    expect(result.title).toEqual(params.title);
-    expect(result.trailers).toEqual(params.trailers);
-    expect(result.year).toEqual(params.year);
+    expect(result).toHaveLength(10);
+
+    result.forEach((movie, index) => {
+      expect(movie.id).toEqual(movies[index].id);
+      expect(movie.actors).toEqual(movies[index].actors);
+      expect(movie.categories).toEqual(movies[index].categories);
+      expect(movie.classification).toEqual(movies[index].classification);
+      expect(movie.cover).toEqual(movies[index].cover);
+      expect(movie.directors).toEqual(movies[index].directors);
+      expect(movie.duration).toEqual(movies[index].duration);
+      expect(movie.keywords).toEqual(movies[index].keywords);
+      expect(movie.release).toEqual(movies[index].release);
+      expect(movie.synopsis).toEqual(movies[index].synopsis);
+      expect(movie.title).toEqual(movies[index].title);
+      expect(movie.trailers).toEqual(movies[index].trailers);
+      expect(movie.year).toEqual(movies[index].year);
+    });
   });
 
   it('should throw an error if the database connection fails', async () => {
     const movieRepository = TestRepositoryUtils.movieRepository;
-    movieRepository.getById = jest.fn().mockRejectedValue(new DatabaseAccessException('Database connection failed.'));
+    movieRepository.getAll = jest.fn().mockRejectedValue(new DatabaseAccessException('Database connection failed.'));
     const useCase = buildUseCase(movieRepository);
 
     let detectedError = null;
 
     try {
-      await useCase.execute({ id: faker.database.mongodbObjectId() });
+      await useCase.execute({ limit: 10, offset: 0 });
     } catch (error) {
       detectedError = error;
     }
@@ -72,13 +82,13 @@ describe('Get Movie Use Case', () => {
 
   it('should throw an error if the movie is invalid', async () => {
     const movieRepository = TestRepositoryUtils.movieRepository;
-    movieRepository.getById = jest.fn().mockRejectedValue(new NotificationError([{ context: 'title', message: 'Invalid title.', field: 'title' }]));
+    movieRepository.getAll = jest.fn().mockRejectedValue(new NotificationError([{ context: 'title', message: 'Invalid title.', field: 'title' }]));
     const useCase = buildUseCase(movieRepository);
 
     let detectedError = null;
 
     try {
-      await useCase.execute({ id: faker.database.mongodbObjectId() });
+      await useCase.execute({ limit: 10, offset: 0 });
     } catch (error) {
       detectedError = error;
     }
