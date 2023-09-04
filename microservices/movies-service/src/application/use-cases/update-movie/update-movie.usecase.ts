@@ -1,5 +1,5 @@
 import { BusinessLogicException } from '@application/shared/exceptions/use-cases/business-logic.exception';
-import { UnknownErrorException } from '@application/shared/exceptions/use-cases/unknown-error.exception';
+import { UnknownErrorException } from '@application/shared/exceptions/data/unknown-error.exception';
 import { DatabaseAccessException } from '@application/shared/exceptions/data/database-access.exception';
 import { IMovieRepository } from '@application/data/repository/movie.repository.interface';
 import { NotificationError } from '@application/shared/domain/notification.error';
@@ -13,7 +13,7 @@ export class UpdateMovieUseCase implements IUseCase<UpdateMovieInput, UpdateMovi
   async execute(params: UpdateMovieInput): Promise<UpdateMovieOutput> {
     try {
       const newMovie = MovieFactory.createFrom(params);
-      const movie = await this._movieRepository.update(params.id, newMovie);
+      const movie = await this._movieRepository.update(newMovie);
       return {
         id: movie.id,
         title: movie.title,
@@ -34,7 +34,7 @@ export class UpdateMovieUseCase implements IUseCase<UpdateMovieInput, UpdateMovi
       if (error instanceof NotificationError) {
         throw new BusinessLogicException('use-case/update-movie', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
-        throw new UnknownErrorException('use-case/update-movie', error.stack);
+        throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }
       throw error;
     }

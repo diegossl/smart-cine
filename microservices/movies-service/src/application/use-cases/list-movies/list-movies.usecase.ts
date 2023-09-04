@@ -1,5 +1,5 @@
 import { BusinessLogicException } from '@application/shared/exceptions/use-cases/business-logic.exception';
-import { UnknownErrorException } from '@application/shared/exceptions/use-cases/unknown-error.exception';
+import { UnknownErrorException } from '@application/shared/exceptions/data/unknown-error.exception';
 import { DatabaseAccessException } from '@application/shared/exceptions/data/database-access.exception';
 import { IMovieRepository } from '@application/data/repository/movie.repository.interface';
 import { NotificationError } from '@application/shared/domain/notification.error';
@@ -18,7 +18,7 @@ export class ListMoviesUseCase implements IUseCase<ListMoviesInput, ListMoviesOu
       if (error instanceof NotificationError) {
         throw new BusinessLogicException('use-case/list-movies', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
-        throw new UnknownErrorException('use-case/list-movies', error.stack);
+        throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }
       throw error;
     }

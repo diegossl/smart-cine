@@ -1,11 +1,11 @@
 import { BusinessLogicException } from '@application/shared/exceptions/use-cases/business-logic.exception';
-import { UnknownErrorException } from '@application/shared/exceptions/use-cases/unknown-error.exception';
+import { UnknownErrorException } from '@application/shared/exceptions/data/unknown-error.exception';
 import { DatabaseAccessException } from '@application/shared/exceptions/data/database-access.exception';
 import { MovieFactory, MoviePropsOptional } from '@application/domain/models/movie/movie.factory';
 import { NotificationError } from '@application/shared/domain/notification.error';
 import { Category, Classification } from '@application/shared/domain/enums';
-import { TestRepositoryUtils } from '@application/shared/tests/repository';
 import { UpdateMovieUseCase } from './update-movie.usecase';
+import { TestUtils } from '@application/shared/tests';
 import { UpdateMovieInput } from './update-movie.dto';
 import { faker } from '@faker-js/faker';
 
@@ -27,13 +27,13 @@ describe('Update Movie Use Case', () => {
     release: faker.date.past(),
   });
   const buildMovie = (params: MoviePropsOptional) => MovieFactory.createFrom(params);
-  const buildUseCase = (movieRepository = TestRepositoryUtils.movieRepository) => new UpdateMovieUseCase(movieRepository);
+  const buildUseCase = (movieRepository = TestUtils.movieRepository) => new UpdateMovieUseCase(movieRepository);
 
   it('should update a movie', async () => {
     const params = buildParams();
     const movie = buildMovie(params);
 
-    const movieRepository = TestRepositoryUtils.movieRepository;
+    const movieRepository = TestUtils.movieRepository;
     movieRepository.update = jest.fn().mockResolvedValue(movie);
 
     const useCase = buildUseCase(movieRepository);
@@ -59,8 +59,10 @@ describe('Update Movie Use Case', () => {
 
   it('should throw an error if the database connection fails', async () => {
     const params = buildParams();
-    const movieRepository = TestRepositoryUtils.movieRepository;
-    movieRepository.update = jest.fn().mockRejectedValue(new DatabaseAccessException('Database connection failed.'));
+    const movieRepository = TestUtils.movieRepository;
+    movieRepository.update = jest
+      .fn()
+      .mockRejectedValue(new DatabaseAccessException(faker.lorem.sentence(), faker.number.int({ min: 500, max: 599 })));
     const useCase = buildUseCase(movieRepository);
 
     let detectedError = null;
@@ -76,7 +78,7 @@ describe('Update Movie Use Case', () => {
 
   it('should throw an error if the movie is invalid', async () => {
     const params = buildParams();
-    const movieRepository = TestRepositoryUtils.movieRepository;
+    const movieRepository = TestUtils.movieRepository;
     movieRepository.update = jest.fn().mockRejectedValue(new NotificationError([{ context: 'title', message: 'Invalid title.', field: 'title' }]));
     const useCase = buildUseCase(movieRepository);
 
