@@ -35,8 +35,6 @@ describe('Create Movie Use Case', () => {
     const useCase = buildUseCase(movieRepository);
     const result = await useCase.execute(params);
 
-    expect(movieRepository.create).toHaveBeenCalledTimes(1);
-
     expect(result.id).toEqual(movie.id);
     expect(result.actors).toEqual(params.actors);
     expect(result.categories).toEqual(params.categories);

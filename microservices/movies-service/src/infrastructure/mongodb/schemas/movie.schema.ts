@@ -58,6 +58,7 @@ const schema = new Schema<Movie>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

@@ -14,7 +14,7 @@ export class GetMovieUseCase implements IUseCase<GetMovieInput, GetMovieOutput> 
       return await this._movieRepository.getById(params.id);
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/get-movie', error.stack, { params });
+        throw new BusinessLogicException('get-movie', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
         throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }

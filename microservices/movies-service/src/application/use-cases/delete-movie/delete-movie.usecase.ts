@@ -14,7 +14,7 @@ export class DeleteMovieUseCase implements IUseCase<DeleteMovieInput, DeleteMovi
       await this._movieRepository.delete(params.id);
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/delete-movie', error.stack, { params });
+        throw new BusinessLogicException('delete-movie', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
         throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }

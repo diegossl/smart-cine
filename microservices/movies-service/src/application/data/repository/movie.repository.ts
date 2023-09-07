@@ -10,14 +10,8 @@ export class MovieRepository implements IMovieRepository {
     try {
       return await this._movieDataSource.getAll();
     } catch (error) {
-      const dataSourceError = error as DatabaseAccessException;
-      throw new DatabaseAccessException(
-        dataSourceError.message,
-        dataSourceError.code,
-        dataSourceError.context,
-        dataSourceError.stack,
-        dataSourceError.details,
-      );
+      const { message, code, context, stack } = error as DatabaseAccessException;
+      throw new DatabaseAccessException(message, code, context, stack);
     }
   }
 
@@ -25,14 +19,8 @@ export class MovieRepository implements IMovieRepository {
     try {
       return await this._movieDataSource.getById(id);
     } catch (error) {
-      const dataSourceError = error as DatabaseAccessException;
-      throw new DatabaseAccessException(
-        dataSourceError.message,
-        dataSourceError.code,
-        dataSourceError.context,
-        dataSourceError.stack,
-        dataSourceError.details,
-      );
+      const { message, code, context, stack } = error as DatabaseAccessException;
+      throw new DatabaseAccessException(message, code, context, stack);
     }
   }
 
@@ -40,14 +28,8 @@ export class MovieRepository implements IMovieRepository {
     try {
       return await this._movieDataSource.create(item);
     } catch (error) {
-      const dataSourceError = error as DatabaseAccessException;
-      throw new DatabaseAccessException(
-        dataSourceError.message,
-        dataSourceError.code,
-        dataSourceError.context,
-        dataSourceError.stack,
-        dataSourceError.details,
-      );
+      const { message, code, context, stack } = error as DatabaseAccessException;
+      throw new DatabaseAccessException(message, code, context, stack);
     }
   }
 
@@ -55,14 +37,8 @@ export class MovieRepository implements IMovieRepository {
     try {
       return await this._movieDataSource.update(item);
     } catch (error) {
-      const dataSourceError = error as DatabaseAccessException;
-      throw new DatabaseAccessException(
-        dataSourceError.message,
-        dataSourceError.code,
-        dataSourceError.context,
-        dataSourceError.stack,
-        dataSourceError.details,
-      );
+      const { message, code, context, stack } = error as DatabaseAccessException;
+      throw new DatabaseAccessException(message, code, context, stack);
     }
   }
 
@@ -70,14 +46,8 @@ export class MovieRepository implements IMovieRepository {
     try {
       await this._movieDataSource.delete(id);
     } catch (error) {
-      const dataSourceError = error as DatabaseAccessException;
-      throw new DatabaseAccessException(
-        dataSourceError.message,
-        dataSourceError.code,
-        dataSourceError.context,
-        dataSourceError.stack,
-        dataSourceError.details,
-      );
+      const { message, code, context, stack } = error as DatabaseAccessException;
+      throw new DatabaseAccessException(message, code, context, stack);
     }
   }
 }

@@ -32,7 +32,7 @@ export class CreateMovieUseCase implements IUseCase<CreateMovieInput, CreateMovi
       };
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/create-movie', error.stack, { params });
+        throw new BusinessLogicException('create-movie', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
         throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }

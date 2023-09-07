@@ -32,7 +32,7 @@ export class UpdateMovieUseCase implements IUseCase<UpdateMovieInput, UpdateMovi
       };
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/update-movie', error.stack, { params });
+        throw new BusinessLogicException('update-movie', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
         throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }

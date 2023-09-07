@@ -15,8 +15,9 @@ export class MovieDataSource extends MongoService<Movie> implements IMovieDataSo
       const movies = await this.find({});
       return movies.map((movie) => MovieFactory.createFrom(movie));
     } catch (error) {
-      const mongooseError = error as any;
-      throw new DatabaseAccessException(mongooseError.message, 500, mongooseError.name, mongooseError.stack);
+      const { message, name, stack, statusCode } = error as any;
+      const code = statusCode || 500;
+      throw new DatabaseAccessException(message, code, name, stack);
     }
   }
 
@@ -25,8 +26,9 @@ export class MovieDataSource extends MongoService<Movie> implements IMovieDataSo
       const movie = await this.findById(id);
       return MovieFactory.createFrom(movie);
     } catch (error) {
-      const mongooseError = error as any;
-      throw new DatabaseAccessException(mongooseError.message, 500, mongooseError.name, mongooseError.stack);
+      const { message, name, stack, statusCode } = error as any;
+      const code = statusCode || 500;
+      throw new DatabaseAccessException(message, code, name, stack);
     }
   }
 
@@ -35,8 +37,9 @@ export class MovieDataSource extends MongoService<Movie> implements IMovieDataSo
       const newMovie = await this.create(movie);
       return MovieFactory.createFrom(newMovie);
     } catch (error) {
-      const mongooseError = error as any;
-      throw new DatabaseAccessException(mongooseError.message, 500, mongooseError.name, mongooseError.stack);
+      const { message, name, stack, statusCode } = error as any;
+      const code = statusCode || 500;
+      throw new DatabaseAccessException(message, code, name, stack);
     }
   }
 
@@ -45,8 +48,9 @@ export class MovieDataSource extends MongoService<Movie> implements IMovieDataSo
       const movieUpdated = await this.findOneAndUpdate({ _id: movie.id }, { ...movie }, { new: true });
       return MovieFactory.createFrom({ ...movieUpdated });
     } catch (error) {
-      const mongooseError = error as any;
-      throw new DatabaseAccessException(mongooseError.message, 500, mongooseError.name, mongooseError.stack);
+      const { message, name, stack, statusCode } = error as any;
+      const code = statusCode || 500;
+      throw new DatabaseAccessException(message, code, name, stack);
     }
   }
 
@@ -54,8 +58,9 @@ export class MovieDataSource extends MongoService<Movie> implements IMovieDataSo
     try {
       await this.deleteOne({ _id: id });
     } catch (error) {
-      const mongooseError = error as any;
-      throw new DatabaseAccessException(mongooseError.message, 500, mongooseError.name, mongooseError.stack);
+      const { message, name, stack, statusCode } = error as any;
+      const code = statusCode || 500;
+      throw new DatabaseAccessException(message, code, name, stack);
     }
   }
 }

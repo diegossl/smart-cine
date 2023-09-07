@@ -16,7 +16,7 @@ export class ListMoviesUseCase implements IUseCase<ListMoviesInput, ListMoviesOu
       return await this._movieRepository.getAll(limit, offset);
     } catch (error) {
       if (error instanceof NotificationError) {
-        throw new BusinessLogicException('use-case/list-movies', error.stack, { params });
+        throw new BusinessLogicException('list-movies', error.stack, { params });
       } else if (error instanceof DatabaseAccessException) {
         throw new UnknownErrorException(error.message, error.code, error.context, error.stack, error.details);
       }

@@ -29,7 +29,7 @@ describe('Movie Repository', () => {
     release: faker.date.past(),
   });
 
-  it('should call getById from page DAO when getById is called', async () => {
+  it('should call getById from movie DAO when getById is called', async () => {
     const dao = TestUtils.movieDAO;
     const id = faker.database.mongodbObjectId();
 
@@ -55,7 +55,7 @@ describe('Movie Repository', () => {
     expect(detectedError).toBeInstanceOf(DatabaseAccessException);
   });
 
-  it('should call getAll from page DAO when getAll is called', async () => {
+  it('should call getAll from movie DAO when getAll is called', async () => {
     const dao = TestUtils.movieDAO;
 
     const repository = buildRepository(dao);
@@ -159,7 +159,7 @@ describe('Movie Repository', () => {
     expect(detectedError).toBeInstanceOf(DatabaseAccessException);
   });
 
-  it('should call delete from page DAO when delete is called', async () => {
+  it('should call delete from movie DAO when delete is called', async () => {
     const dao = TestUtils.movieDAO;
 
     const id = faker.database.mongodbObjectId();
