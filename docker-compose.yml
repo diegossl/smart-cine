@@ -1,0 +1,17 @@
+version: '3'
+services:
+  nestjs-app:
+    build:
+      context: ./microservices/movies-service
+      dockerfile: server.Dockerfile
+    ports:
+      - "3000:3000" # Mapeie a porta do contêiner para a porta do host
+    depends_on:
+      - mongo
+
+  mongo:
+    build:
+      context: ./microservices/movies-service
+      dockerfile: database.Dockerfile
+    ports:
+      - "27017:27017" # Mapeie a porta do contêiner para a porta do host
