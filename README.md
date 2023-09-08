@@ -1,1 +1,1 @@
-# smart-cine
+# Smart Cine
